@@ -4,19 +4,19 @@ from torch import Tensor
 import numpy as np
 from torch.utils.data import Dataset
 from matplotlib import pyplot as plt
+import gc
 
 class ImageDataset(Dataset):
 
     __images: Tensor
 
-    def __init__(self, path, filename):
-        video = torchvision.io.read_video(path+"/"+filename)
-        self.__images = video[0]
+    def __init__(self, video: Tensor):
+        self.__images = video
 
     def __len__(self):
         return len(self.__images)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int):
         return self.__images[index]
 
 class CompressedDataset(Dataset):
@@ -24,35 +24,65 @@ class CompressedDataset(Dataset):
     __aux: Tensor = None
     __frames: Tensor
 
-    def __init__(self, images, aux, frames):
-        image_tuples = np.zeros([images.shape[0] - 1, 2, images.shape[1], images.shape[2]])
-        frame_tuples = np.zeros([images.shape[0] - 1, 2])
-        relate_aux = np.array([])
-
-        for i in (len(images) - 1):
-            image_tuples[i] = images[i:i+2,:,:]
-            frame_tuples[i] = frames[i:i+2]
-            if aux:
-                relate_aux = np.append(relate_aux, aux[(frames[i] + frames[i+1]) // 2])
-        
-        self.__frames = torch.from_numpy(frame_tuples)
-        self.__images = torch.from_numpy(image_tuples)
-        if aux:
-            self.__aux = torch.from_numpy(relate_aux)
+    def __init__(self, images: Tensor, aux: Tensor, frames: Tensor):
+        self.__images = images
+        self.__frames = frames
+        if aux is not None:
+            self.__aux = aux
 
 
     def __len__(self):
-        return len(self.__images)
+        return len(self.__images) - 1
 
-    def __getitem__(self, index):
-        if self.__aux:
-            return self.__images[index], self.__aux[index], self.__frames[index]
+    def __getitem__(self, index: int):
+        if self.__aux is not None:
+            aux_index = ((self.__frames[index].int() + self.__frames[index+1].int()) // 2).int()
+            return self.__images[index:index+2,:,:], self.__aux[aux_index], self.__frames[index:index+2]
         else:
-            return self.__images[index], None, self.__frames[index]
+            return self.__images[index:index+2,:,:], None, self.__frames[index:index+2]
+    
+    def update(self, new_data):
+        
+        cur_images = torch.empty([self.__images.shape[0]+ len(new_data[0]), self.__images.shape[1], self.__images.shape[2], self.__images.shape[3]])
+        cur_frames = torch.empty([self.__images.shape[0]+ len(new_data[0])])
+
+        print(f"start {len(cur_images)}")
+
+        for i in range(len(self.__images)):
+            cur_images[i*2] = self.__images[i]
+            cur_frames[i*2] = self.__frames[i]
+            print(i)
+        
+        del self.__images
+        del self.__frames
+        gc.collect()
+        print("check 1")
+
+        for i in range(len(new_data[0])):
+            cur_images[i*2+1] = new_data[0][i]
+            cur_frames[i*2+1] = new_data[1][i]
+        
+        del new_data
+        gc.collect()
+        print("check 2")
+
+        self.__images = cur_images
+        self.__frames = cur_frames
+
+        print("check 3")
+    
+    def get_images(self):
+        return self.__images
+    
+    def delete(self):
+        del self.__images
+        del self.__frames
+        del self.__aux
     
 
 def __test_image_dataset(path, filename):
-    data = ImageDataset(path, filename)
+    video = torchvision.io.read_video(path+"/"+filename)[0]
+    data = ImageDataset(video)
     print(len(data))
     plt.imshow(data[0])
     plt.show()

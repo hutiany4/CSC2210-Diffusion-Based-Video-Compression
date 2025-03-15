@@ -1,6 +1,9 @@
+from typing import Union
 import torch
+from torch import Tensor
+from torch.utils.data import DataLoader, Dataset
 import numpy as np
-from models.base_model import BaseModel
+from src.models.base_model import BaseModel
 
 class ImageCompressionModel(BaseModel):
     def create_model(self):
@@ -13,21 +16,25 @@ class ImageCompressionModel(BaseModel):
               device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")):
         pass
 
-    def inference(self, dataloader):
-        output = np.array([])
-        with torch.no_grad():
-            self.model.eval()
-            for data in dataloader:
-                 # Tensors to gpu
-                if torch.cuda.is_available():
-                    data, target = data.cuda(), target.cuda()
+    def inference(self, dataset: Dataset) -> Tensor:
+        # output = np.array([])
+        # with torch.no_grad():
+        #     self.model.eval()
+        #     for data in dataloader:
+        #          # Tensors to gpu
+        #         if torch.cuda.is_available():
+        #             data, target = data.cuda(), target.cuda()
 
-                # Forward pass
-                cur_output = self.model(data)
+        #         # Forward pass
+        #         cur_output = self.model(data)
 
-                output.append(torch.Tensor.numpy(cur_output, force=True))
+        #         output.append(torch.Tensor.numpy(cur_output, force=True))
+
+        output = []
+        for i in range(len(dataset)):
+            output.append(dataset[i])
         
-        return output
+        return torch.stack(output, dim=0)
 
 
 class ImageReconstructionModel(BaseModel):
@@ -41,21 +48,25 @@ class ImageReconstructionModel(BaseModel):
               device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")):
         pass
 
-    def inference(self, dataloader):
-        output = np.array([])
-        with torch.no_grad():
-            self.model.eval()
-            for data in dataloader:
-                 # Tensors to gpu
-                if torch.cuda.is_available():
-                    data, target = data.cuda(), target.cuda()
+    def inference(self, dataset: Dataset) -> Tensor:
+        # output = np.array([])
+        # with torch.no_grad():
+        #     self.model.eval()
+        #     for data in dataloader:
+        #          # Tensors to gpu
+        #         if torch.cuda.is_available():
+        #             data, target = data.cuda(), target.cuda()
 
-                # Forward pass
-                cur_output = self.model(data)
+        #         # Forward pass
+        #         cur_output = self.model(data)
 
-                output.append(torch.Tensor.numpy(cur_output, force=True))
+        #         output.append(torch.Tensor.numpy(cur_output, force=True))
         
-        return output
+        output = []
+        for i in range(len(dataset)):
+            output.append(dataset[i])
+        
+        return torch.stack(output, dim=0)
 
 class AuxModel(BaseModel):
     def create_model(self):
@@ -68,18 +79,18 @@ class AuxModel(BaseModel):
               device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")):
         pass
 
-    def inference(self, dataloader):
-        output = np.array([])
-        with torch.no_grad():
-            self.model.eval()
-            for data in dataloader:
-                 # Tensors to gpu
-                if torch.cuda.is_available():
-                    data, target = data.cuda(), target.cuda()
+    def inference(self, dataset: Dataset) -> Union[Tensor, None]:
+        # output = np.array([])
+        # with torch.no_grad():
+        #     self.model.eval()
+        #     for data in dataloader:
+        #          # Tensors to gpu
+        #         if torch.cuda.is_available():
+        #             data, target = data.cuda(), target.cuda()
 
-                # Forward pass
-                cur_output = self.model(data)
+        #         # Forward pass
+        #         cur_output = self.model(data)
 
-                output.append(torch.Tensor.numpy(cur_output, force=True))
+        #         output.append(torch.Tensor.numpy(cur_output, force=True))
         
-        return output
+        return None

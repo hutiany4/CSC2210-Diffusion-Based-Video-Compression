@@ -20,4 +20,4 @@ dependencies:
       - torchvision
       - numpy
       - scipy
-      - pyav
+      - av
