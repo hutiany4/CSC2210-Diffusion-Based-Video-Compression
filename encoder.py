@@ -7,13 +7,13 @@ import torch
 from torch import Tensor
 
 path = "./input"
-filename = "basketball.mp4"
+filename = "sing"
 frame_rate = 16
 
 
 compression_model = ImageCompressionModel()
 aux_model = AuxModel()
-video = torchvision.io.read_video(path+"/"+filename, pts_unit="sec")[0]
+video = torchvision.io.read_video(path+"/"+filename+".mp4", pts_unit="sec")[0]
 
 print(f"video length: {len(video)}")
 
@@ -43,9 +43,9 @@ print(f"image length: {len(images)}")
 print(f"aux length: {len(aux) if aux is not None else 0}")
 print(f"frames length: {len(frames)}")
 
-np.save("./input/basketball_images", Tensor.numpy(images, force=True))
-np.save("./input/basketball_frames", Tensor.numpy(frames, force=True))
+np.save("./input/"+filename+"_images", Tensor.numpy(images, force=True))
+np.save("./input/"+filename+"_frames", Tensor.numpy(frames, force=True))
 if aux is not None:
-    np.save("./input/basketball_aux", Tensor.numpy(aux, force=True))
+    np.save("./input/"+filename+"_aux", Tensor.numpy(aux, force=True))
 else:
-    np.save("./input/basketball_aux", np.array([]))
+    np.save("./input/"+filename+"_aux", np.array([]))

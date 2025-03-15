@@ -43,20 +43,16 @@ class CompressedDataset(Dataset):
     
     def update(self, new_data):
         
-        cur_images = torch.empty([self.__images.shape[0]+ len(new_data[0]), self.__images.shape[1], self.__images.shape[2], self.__images.shape[3]])
-        cur_frames = torch.empty([self.__images.shape[0]+ len(new_data[0])])
-
-        print(f"start {len(cur_images)}")
+        cur_images = torch.empty([self.__images.shape[0]+ len(new_data[0]), self.__images.shape[1], self.__images.shape[2], self.__images.shape[3]], dtype=torch.uint8)
+        cur_frames = torch.empty([self.__images.shape[0]+ len(new_data[0])], dtype=torch.uint8)
 
         for i in range(len(self.__images)):
             cur_images[i*2] = self.__images[i]
             cur_frames[i*2] = self.__frames[i]
-            print(i)
         
         del self.__images
         del self.__frames
         gc.collect()
-        print("check 1")
 
         for i in range(len(new_data[0])):
             cur_images[i*2+1] = new_data[0][i]
@@ -64,12 +60,9 @@ class CompressedDataset(Dataset):
         
         del new_data
         gc.collect()
-        print("check 2")
 
         self.__images = cur_images
         self.__frames = cur_frames
-
-        print("check 3")
     
     def get_images(self):
         return self.__images
