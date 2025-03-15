@@ -1,0 +1,23 @@
+name: csc2210
+channels:
+  - defaults
+  - pytorch
+dependencies:
+  - python=3.11
+  - notebook
+  - pip
+  - pytorch
+  - mkl
+  - pip:
+      - pypher
+      - diffusers
+      - transformers
+      - opencv-python
+      - ipywidgets
+      - tqdm
+      - matplotlib
+      - scikit-image
+      - torchvision
+      - numpy
+      - scipy
+      - pyav
