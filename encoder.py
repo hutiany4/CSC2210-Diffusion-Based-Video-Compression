@@ -43,9 +43,9 @@ print(f"image length: {len(images)}")
 print(f"aux length: {len(aux) if aux is not None else 0}")
 print(f"frames length: {len(frames)}")
 
-np.save("./input/"+filename+"_images", Tensor.numpy(images, force=True))
-np.save("./input/"+filename+"_frames", Tensor.numpy(frames, force=True))
+np.save("./input/"+filename+"_images", Tensor.numpy(images))
+np.save("./input/"+filename+"_frames", Tensor.numpy(frames))
 if aux is not None:
-    np.save("./input/"+filename+"_aux", Tensor.numpy(aux, force=True))
+    np.save("./input/"+filename+"_aux", Tensor.numpy(aux))
 else:
     np.save("./input/"+filename+"_aux", np.array([]))

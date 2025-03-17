@@ -36,13 +36,12 @@ class CompressedDataset(Dataset):
 
     def __getitem__(self, index: int):
         if self.__aux is not None:
-            aux_index = ((self.__frames[index].int() + self.__frames[index+1].int()) // 2).int()
+            aux_index = (self.__frames[index].item() + self.__frames[index+1].item()) // 2
             return self.__images[index:index+2,:,:], self.__aux[aux_index], self.__frames[index:index+2]
         else:
             return self.__images[index:index+2,:,:], None, self.__frames[index:index+2]
     
     def update(self, new_data):
-        
         cur_images = torch.empty([self.__images.shape[0]+ len(new_data[0]), self.__images.shape[1], self.__images.shape[2], self.__images.shape[3]], dtype=torch.uint8)
         cur_frames = torch.empty([self.__images.shape[0]+ len(new_data[0])], dtype=torch.uint8)
 

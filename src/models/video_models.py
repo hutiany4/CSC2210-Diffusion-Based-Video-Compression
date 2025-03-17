@@ -24,6 +24,6 @@ class FrameInterpolationModel(BaseModel):
             interpolated_image = 0.5 * data[0][0] + 0.5 * data[0][1]
             
             new_images.append(interpolated_image)
-            new_frames.append((data[2][0] + data[2][1]) // 2)
+            new_frames.append((data[2][0].item() + data[2][1].item()) // 2)
 
         return new_images, new_frames

@@ -40,6 +40,6 @@ print("generation complete!")
 print(f"final frames length: {len(compressed_dataset)}")
 print("writing to video file")
 
-torchvision.io.write_video("./output/"+filename+".mp4", compressed_dataset.get_images(), 24)
+torchvision.io.write_video("./output/"+filename+".mp4", compressed_dataset.get_images(), 24, options = {"crf": "0"})
 
 print("writing complete!")
