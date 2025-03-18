@@ -11,6 +11,8 @@ dependencies:
   - numpy=1.23.1
   - pip:
       - av
+      - xformers
+      - openai-clip
       - gradio==3.16.2
       - albumentations==1.3.0
       - opencv-contrib-python==4.3.0.36
