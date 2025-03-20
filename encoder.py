@@ -1,19 +1,22 @@
 from src.models.image_models import ImageCompressionModel, AuxModel
 from src.data.dataset import ImageDataset, CompressedDataset
 from torch.utils.data import DataLoader
+from pathlib import Path
+import os
 import numpy as np
 import torchvision
 import torch
 from torch import Tensor
+import cv2 as cv
 
 path = "./input"
-filename = "sing"
-frame_rate = 16
+filename = "basketball"
+frame_rate = 8
 
 
 compression_model = ImageCompressionModel()
 aux_model = AuxModel()
-video = torchvision.io.read_video(path+"/"+filename+".mp4", pts_unit="sec")[0]
+video = torchvision.io.read_video(path+"/"+filename+".mp4", pts_unit="sec")[0].to(torch.uint8)
 
 print(f"video length: {len(video)}")
 
@@ -34,18 +37,19 @@ video_data = ImageDataset(video)
 
 images = compression_model.inference(key_frame_data)
 aux = aux_model.inference(video_data)
-frames = torch.Tensor(frames)
-
-if aux is None:
-    aux = torch.Tensor([1] * len(video))
 
 print(f"image length: {len(images)}")
 print(f"aux length: {len(aux) if aux is not None else 0}")
 print(f"frames length: {len(frames)}")
 
-np.save("./input/"+filename+"_images", Tensor.numpy(images))
-np.save("./input/"+filename+"_frames", Tensor.numpy(frames))
+Path(f"./output/{filename}/keyframes").mkdir(parents=True, exist_ok=True)
+Path(f"./output/{filename}/auxiliary").mkdir(parents=True, exist_ok=True)
+
+for i in range(len(images)):
+    cv.imwrite(f"./output/{filename}/keyframes/{i}.png", cv.cvtColor(images[i].numpy(), cv.COLOR_RGB2BGR))
+
+np.save(f"./output/{filename}/frames", frames)
+
 if aux is not None:
-    np.save("./input/"+filename+"_aux", Tensor.numpy(aux))
-else:
-    np.save("./input/"+filename+"_aux", np.array([]))
+    for i in range(len(aux)):
+        cv.imwrite(f"./output/{filename}/auxiliary/{i}.png", aux[i])
