@@ -13,6 +13,7 @@ dependencies:
       - av
       - xformers
       - openai-clip
+      - tqdm
       - gradio==3.16.2
       - albumentations==1.3.0
       - opencv-contrib-python==4.3.0.36

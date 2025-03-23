@@ -28,6 +28,6 @@ class AuxModel(BaseModel):
     def inference(self, dataset: Dataset) -> Union[Tensor, None]:
         output = []
         for data in dataset:
-            output.append(cv.Canny(data.numpy(), 220, 255))
+            output.append(cv.Canny(data.numpy(), 200, 255))
         
         return np.array(output)
