@@ -1,5 +1,6 @@
 from typing import List
 import torchvision
+import einops
 import torch
 from torch import Tensor
 import numpy as np
@@ -39,14 +40,27 @@ class CompressedDataset(Dataset):
         keyframe1 = cv.cvtColor(cv.imread(f"{self.__dir}/keyframes/{self.__frames[index]}.png"), cv.COLOR_BGR2RGB)
         keyframe2 = cv.cvtColor(cv.imread(f"{self.__dir}/keyframes/{self.__frames[index+1]}.png"), cv.COLOR_BGR2RGB)
 
-        aux = []
+        frame_tensor = []
+        
+        ## Add first frame tensor into the list
+        frame1_tensor = torch.from_numpy(np.array(keyframe1)).to(torch.uint8).permute(2,0,1)
+        frame_tensor.append(frame1_tensor)
 
-        for i in range(self.__frames[index]+1, self.__frames[index+1]):
-            aux.append(cv.imread(f"{self.__dir}/auxiliary/{i}.png", cv.IMREAD_GRAYSCALE))
+        for i in range(int(self.__frames[index])+1, int(self.__frames[index+1])):
+            aux_img = cv.imread(f"{self.__dir}/auxiliary/{i}.png", cv.IMREAD_GRAYSCALE)
+            aux_img = np.expand_dims(aux_img, axis=-1)
+            control = torch.from_numpy(aux_img).to(torch.uint8).cuda().repeat(1, 1, 3) / 255.0
+            control = torch.stack([control for _ in range(1)], dim=0)
+            control = einops.rearrange(control, 'b h w c -> b c h w').clone()
+            print("The canny image has the dimension:")
+            print(control.shape)
+            frame_tensor.append(control)
         
-        assert(len(aux) == 7)
+        ## Add last frame tensor into the list
+        frame2_tensor = torch.from_numpy(np.array(keyframe2)).to(torch.uint8).permute(2,0,1)
+        frame_tensor.append(frame2_tensor)
         
-        return Tensor(np.array([keyframe1, keyframe2])).to(torch.uint8), Tensor(np.array(aux)).to(torch.uint8)
+        return frame_tensor
     
 
 if __name__ == "__main__":
