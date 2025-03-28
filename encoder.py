@@ -51,11 +51,11 @@ print(f"frames length: {len(frames)}")
 Path(f"./output/{filename}/keyframes").mkdir(parents=True, exist_ok=True)
 Path(f"./output/{filename}/auxiliary").mkdir(parents=True, exist_ok=True)
 
-for i in range(16):
+for i in range(len(images)):
     cv.imwrite(f"./output/{filename}/keyframes/{frames[i]}.png", cv.cvtColor(images[i].numpy(), cv.COLOR_RGB2BGR))
 
 np.save(f"./output/{filename}/frames", frames)
 
 if aux is not None:
-    for i in range(121):
+    for i in range(len(aux)):
         cv.imwrite(f"./output/{filename}/auxiliary/{i}.png", aux[i])

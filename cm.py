@@ -462,12 +462,12 @@ class ContextManager:
             max_steps = int(ddim_steps * max_steps)
     
         # if isinstance(img1, Image.Image):
-        start_index = index * num_frames
-        end_index = start_index + num_frames - 1
+        start_index = index * (num_frames - 1)
+        # end_index = start_index + num_frames - 1
         image1 = transforms.ToPILImage(mode='RGB')(img1)
         image1.save(f"./output/basketball/generated/{start_index:03d}.png")
-        image2 = transforms.ToPILImage(mode='RGB')(img2)
-        image2.save(f"./output/basketball/generated/{end_index:03d}.png")
+        # image2 = transforms.ToPILImage(mode='RGB')(img2)
+        # image2.save(f"./output/basketball/generated/{end_index:03d}.png")
         img1 = img1.unsqueeze(0).cuda()
         img2 = img2.unsqueeze(0).cuda()
 
