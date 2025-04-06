@@ -25,9 +25,13 @@ class ImageReconstructionModel(BaseModel):
 
 class AuxModel(BaseModel):
 
+    def __init__(self, lower_bound):
+        super().__init__()
+        self.lower_bound = lower_bound
+
     def inference(self, dataset: Dataset) -> Union[Tensor, None]:
         output = []
         for data in dataset:
-            output.append(cv.Canny(data.numpy(), 200, 255))
+            output.append(cv.Canny(data.numpy(), self.lower_bound, 255))
         
         return np.array(output)

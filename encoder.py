@@ -12,11 +12,12 @@ import cv2 as cv
 
 path = "./input"
 filename = "basketball"
-frame_rate = 8
+rate = 8
+canny_lower_bound = 200
 
 
 compression_model = ImageCompressionModel()
-aux_model = AuxModel()
+aux_model = AuxModel(canny_lower_bound)
 video = torchvision.io.read_video(path+"/"+filename+".mp4", pts_unit="sec")[0]
 video = video.permute(0, 3, 1, 2)
 resized_video = F.interpolate(video, size=(960, 1280), mode='bilinear', align_corners=False)
@@ -30,7 +31,7 @@ key_frames = []
 frames = []
 
 for i in range(len(video)):
-    if i % frame_rate == 0:
+    if i % rate == 0:
         key_frames.append(video[i])
         frames.append(i)
 
