@@ -142,7 +142,8 @@ class ContextManager:
             if self.version == '2.1':
                 self.model.load_state_dict(load_state_dict('./controlnet/models/canny-sd21.ckpt', location='cuda'))
             else:
-                self.model.load_state_dict(load_state_dict('./models/control_sd15_canny.pth', location='cuda'))
+                # self.model.load_state_dict(load_state_dict('./models/control_sd15_canny.pth', location='cuda'))
+                self.model.load_state_dict(load_state_dict('./models/new_control_sd15_canny.pth', location='cuda'))
         elif mode == 'seg':
             self.model.load_state_dict(load_state_dict('./controlnet/models/control_sd15_seg.pth', location='cuda'))
         self.mode = mode
@@ -465,7 +466,7 @@ class ContextManager:
         start_index = index * (num_frames - 1)
         # end_index = start_index + num_frames - 1
         image1 = transforms.ToPILImage(mode='RGB')(img1)
-        image1.save(f"./output/basketball/generated/{start_index:03d}.png")
+        image1.save(f"./output/road/generated/{start_index:03d}.png")
         # image2 = transforms.ToPILImage(mode='RGB')(img2)
         # image2.save(f"./output/basketball/generated/{end_index:03d}.png")
         img1 = img1.unsqueeze(0).cuda()
@@ -603,7 +604,7 @@ class ContextManager:
                     image = (image.permute(0, 2, 3, 1) * 127.5 + 127.5).cpu().numpy().clip(0, 255).astype(np.uint8)
                     interpolate_result[frame_ix-1] = torch.from_numpy(image[0]).squeeze(0)
                     curr_index = start_index + frame_ix
-                    Image.fromarray(image[0]).save(f"./output/basketball/generated/{curr_index:03d}.png")
+                    Image.fromarray(image[0]).save(f"./output/road/generated/{curr_index:03d}.png")
                     print("The shape of the frame inserted into interpolate_result has the shape: ")
                     print(interpolate_result[frame_ix-1].shape)
 
